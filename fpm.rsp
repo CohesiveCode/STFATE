@@ -1,0 +1,23 @@
+@testgfortran
+option test --compiler gfortran --flag "-O3 -march=native -mtune=native"
+
+@wtestifort
+option test --compiler ifort --flag "/O3 /Qxhost"
+
+@ltestifort
+option test --compiler ifort --flag "-O3 -xhost"
+
+@wtestifx
+option test --compiler ifx --flag "/O3 /Qxhost"
+
+@ltestifx
+option test --compiler ifx --flag "-O3 -xhost"
+
+@testnvfortran
+option test --compiler nvfortran --flag "-Mpreprocess -fast"
+
+@ifxrun
+option run --compiler ifx
+
+@fortbuild
+option build --flag "-fPIC" --c-flag "-fPIC" --cxx-flag "-fPIC"
