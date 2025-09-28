@@ -21,3 +21,6 @@ option run --compiler ifx
 
 @fortbuild
 option build --flag "-fPIC" --c-flag "-fPIC" --cxx-flag "-fPIC"
+
+@fortrun
+option run --flag "-fPIC" --c-flag "-fPIC" --cxx-flag "-fPIC"

@@ -77,6 +77,7 @@ type = "shared"
 [dependencies]
 
 stdlib = { git="https://github.com/fortran-lang/stdlib", branch="stdlib-fpm" }
+# stdlib = "*"
 # fortplot = { git = "https://github.com/krystophny/fortplot" }
 
 [dev-dependencies]
