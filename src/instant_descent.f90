@@ -9,7 +9,7 @@ module mod_instant_descent
    implicit none
    private
    public :: calc_V_c, calc_vorticity, calc_alpha, calc_E, calc_S_i, calc_M, calc_F_b, calc_drag, &
-             calc_B, calc_P_i, calc_diss_param
+      calc_B, calc_P_i, calc_diss_param
 contains
 
 
@@ -145,7 +145,7 @@ contains
    pure function calc_diss_param(mean_radius, surf_rho_a, g, C) result(A)
       !! Calculate the dissipation parameter of the cloud
       real(dp), intent(in) :: mean_radius  ! Mean radius of the cloud in meters
-      real(dp), intent(in), optional :: C            ! Empirical constant (dimensionless)
+      real(dp), intent(in), optional :: C  ! Empirical constant (dimensionless)
       real(dp), intent(in) :: surf_rho_a   ! Density of the ambient fluid at the surface (kg/m^3)
       real(dp), intent(in) :: g            ! Acceleration due to gravity (m/s^2)
       real(dp)             :: A            ! Result: Dissipation parameter (m^2/s^3)
