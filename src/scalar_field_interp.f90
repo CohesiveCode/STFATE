@@ -30,6 +30,8 @@ module mod_scalar_interp
         ! Find the interval [x(i), x(i+1)] that contains xi
         i = binary_search(xi, x(1:n))
 
+        if (i == n) i = n - 1  ! Handle edge case where xi is exactly x(n)
+        
         ! Perform linear interpolation
         fi = linear_interp(xi, x(i), x(i+1), f(i), f(i+1))
     end function interp1d
@@ -55,6 +57,9 @@ module mod_scalar_interp
         ! Find lower bounding indices in x and y
         i = binary_search(xi, x(1:nx-1))
         j = binary_search(yi, y(1:ny-1))
+
+        if (i == nx) i = nx - 1  ! Handle edge case where xi is exactly x(nx)
+        if (j == ny) j = ny - 1  ! Handle edge case where yi is exactly y(ny)
 
         ! Perform bilinear interpolation
         fi = bilinear_interp(xi, yi, x(i), x(i+1), y(j), y(j+1), &
@@ -84,6 +89,10 @@ module mod_scalar_interp
         i = binary_search(xi, x(1:nx))
         j = binary_search(yi, y(1:ny))
         k = binary_search(zi, z(1:nz))
+
+        if (i == nx) i = nx - 1  ! Handle edge case where xi is exactly x(nx)
+        if (j == ny) j = ny - 1  ! Handle edge case where yi is exactly y(ny)
+        if (k == nz) k = nz - 1  ! Handle edge case where zi is exactly z(nz)
 
         ! Perform trilinear interpolation
         fi = trilinear_interp(xi, yi, zi, x(i), x(i+1), y(j), y(j+1), z(k), z(k+1), &

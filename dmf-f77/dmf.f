@@ -608,7 +608,7 @@ C      ....SELECT TIME STEP FOR ; INTEGRATIONS..
 C      CRITERION FROM CONDITION OF STRATIFICATION
       DT=0.1*PI*FF/SQRT(EE1)
 C    CRITERION FROM UNIFORM AMBIENT
-      DT1=.01*RB*FF*(1.+ALPHA0*H/RB)**2/(CV(1)*2.)
+      DT1=.01*RB*FF*(1.+ALPHA0*H/RB)**2/(CV(1)*2.) ! Not sure what this is
       IF(DT-DTl) 250,240,240
   240 DT=DTl
 C      ....INITIAL POSITION OF CLOUD CENTROID (W/R TO BARGE)
@@ -617,12 +617,12 @@ C      ....INITIAL POSITION OF CLOUD CENTROID (W/R TO BARGE)
       E(3)=0.
 C      ....INITIAL MASS OF CLOUD....
       VOLUME=2.*PI*RB**3/3
-      E(4)=ROO*VOLUME
+      E(4)=ROO*VOLUME ! Mass of the cloud
 C      ....INITIAL MOMENTA-- —
-      CMMASS=CM*E(4)
-      E(5)=CMMASS*CU(1)
-      E(6)=CMMASS*CV(1)
-      E(7)=CMMASS*CW(1)
+      CMMASS=CM*E(4) ! What I think
+      E(5)=CMMASS * CU(1)
+      E(6)=CMMASS * CV(1)
+      E(7)=CMMASS * CW(1)
 C      ....INITIAL BUOYANCY.,.,
       E(8)=(ROA(1)-ROO)*VOLUME
 C      ....INITIAL VORTICITY.,..
@@ -811,7 +811,8 @@ C      INTERPOLATE FOR AMBIENT DENSITY AT DEPTH OF CENTROID OF CLOUD...
   100 ROA=ROA(IY)+(E(2)-Y(IY))*(ROA(IY+1)-ROA(IY))/(Y(IY+1)-Y(IY))
       CE=(ROA(IY+1)-ROA(IY))/(Y(IY+1)-Y(IY))
       !   E(4) is the mass
-      VOLUME=(E(4)+E(8))/ROA(1)
+      VOLUME=(E(4)+E(8))/ROA(1) ! I'm not sure what this is averaging. 
+      ! Seems to be calculating the volume of the cloud from the mass of the cloud and the mass of the particles in the cloud?
       ROO=E(4)/VOLUME
       IF (ROO .LE. ROAA) NUTRL=1
       *VOLUME/
@@ -826,37 +827,50 @@ C      DETERMINE HORIZONTAL VELOCITIES AT CLOUD
   120 ALPHA=ALPHAC*SQRTHA=ALPHAO( TANH (*((GVROO-OLUMEROAA)E(9)**ALPHA0))*22))
 C
 C    MAIN COMPUTATIONS
-  200 CMMASS=CM*E(4)
-      UU=E(5)/CMMASS
-      W=E(6)/CMMASS
-      WW=E(7)/CMMASS
-      PHI=SQRT((UU-UA)**2+(VV**2)+(WW-WA)**2)
+  200 CMMASS=CM*E(4) ! Calc the mass of 
+      UU=E(5) / CMMASS ! Think: Calc the u-vel from the u momentum
+      VV=E(6) / CMMASS ! Calc the v-vel from the v momentum
+      WW=E(7) / CMMASS ! Calc the w-vel from the w momentum
+      PHI=SQRT((UU-UA)**2+(VV**2)+(WW-WA)**2) ! Velocity norm
 C     ENTRAINED VOLUME IS
-      ENTRV=2*PI*B**2*ALPHA*PHI
+      ENTRV=2*PI*B**2*ALPHA*PHI ! Calc the entrainment rate
       EP(1)=UU
       EP(2)=VV
       EP(3)=WW
+      ! Rate of mass entrainment kg/s
       EP(4)=ENTRV*ROAA
-      EP(5) = ENTPV*ROAA*UA - DRAG*(UU-UA)*0.5
+      DRAG = CD * ROAA * PI * B**2 * PHI * 0.5
+      ! Calc the net x - force. ENTRV is holding m^3/s
+      EP(5) = ENTRV*ROAA*UA - DRAG*(UU-UA)*0.5
+      ! calc the net y - force
       EP(6) = VOLUME*(ROD-ROAA)*G - DRAG*VV
-      EP(7) = ENTRY*ROAA*WA - DRAG*(WW-WA)*0.5
-      EP(8) = ENTRY*(ROA(1)-ROAA)
+      ! Calc the net z - force
+      EP(7) = ENTRV*ROAA*WA - DRAG*(WW-WA)*0.5
+      ! Update the rate of buoyant mass change
+      EP(8) = ENTRV*(ROA(1)-ROAA)
+      ! Vorticity changeDissipation parameter * CE (where CE is derivative of the spatial ambient densitity at the cloud location)
       EP(9) = -3.0*B**2*G*CE/ROA(1)
+      ! Loop over each iTH class and update it's parameters
       DO 250 K=1,NS
-C     Absolute value of the settling velocity
-      ABSWS = ABS(VFALL(K)) 
-      IF (ABSWS - ABS(VV)) 220, 220, 230
-C     IF FALL VEL. IS SMALLER THAN THE CONVECTIVE VEL. NO SETTLING OCCURS
-  220 BETAA = 1.0
-      GO TO 240
-  230 BETAA = BETA
-  240 SETLV = PI*B**2*ABS(VFALL(K))*(1.0-BETAA)*E(K+9)/VOLUME
-      EP(4) = EP(4) - SETLV*(ROAS(K))
-      EP(5) = EP(5) - SETLV*(ROAS(K))*UU
-      EP(6) = EP(6) - SETLV*(ROAS(K))*VV
-      EP(7) = EP(7) - SETLV*(ROAS(K))*WW
-      EP(8) = EP(8) - SETLV*(ROA(1)-ROAS(K))
-      EP(K+9) = -SETLV
+C       Absolute value of the settling velocity
+        ABSWS = ABS(VFALL(K)) 
+        IF (ABSWS - ABS(VV)) 220, 220, 230
+C       IF FALL VEL. IS SMALLER THAN THE CONVECTIVE VEL. NO SETTLING OCCURS
+  220   BETAA = 1.0
+        GO TO 240
+  230   BETAA = BETA
+  ! E(K+9)/VOLUME is the volume concentration of that material
+  ! Calc the volume rate of solids in class i settling out of the cloud.
+  240   SETLV = PI*B**2*ABS(VFALL(K))*(1.0-BETAA)*E(K+9)/VOLUME ! Calc the rate the solids are settling out of the cloud. 
+        ! kg/s - m^3/s * kg/m^3
+        EP(4) = EP(4) - SETLV*(ROAS(K)) ! Subtract the
+        !  Subtract the rate of momentum lost because of the material settiling out.
+        EP(5) = EP(5) - SETLV*(ROAS(K))*UU
+        EP(6) = EP(6) - SETLV*(ROAS(K))*VV
+        EP(7) = EP(7) - SETLV*(ROAS(K))*WW
+        ! Subtract the rate of buoyant mass change due to material settiling out.
+        EP(8) = EP(8) - SETLV*(ROA(1)-ROAS(K))
+        EP(K+9) = -SETLV
       250 CONTINUE
       RETURN
       END
@@ -1331,16 +1345,21 @@ C
 C
       CALL DERIVE(E,U,W,D)
       DO 2 I=1,NE
+C This calculates the increment at the first dt value
       W1(I)=DT*EP(I)
+C This accumulates the weighted increment
     2 Z(I)=E(I)+ W1(I)*0.5
+
       CALL DERIVE(Z,U,W,D)
       DO 3 I=1,NE
       W2(I)=DT*EP(I)
     3 Z(I)=E(I)+W2(I)*0.5
+
       CALL DERIVE(Z,U,W,D)
       DO 4 I=1,NE
       W3(I)=DT*EP(I)
     4 Z(I)=E(I)+W3(I)
+
       CALL DERIVE(Z,U,W,D)
       DO 7 I=1,NE
       W4(I)=DT*EP(I)
