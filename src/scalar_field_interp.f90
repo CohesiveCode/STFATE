@@ -3,7 +3,8 @@ module mod_scalar_interp
     use mod_search, only: binary_search
     use mod_linear_interp, only: linear_interp, bilinear_interp, trilinear_interp
 
-    implicit none
+    implicit none(type, external)
+
     private
     public :: interp1d, interp2d, interp3d
 

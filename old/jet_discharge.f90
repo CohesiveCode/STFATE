@@ -6,136 +6,157 @@
 
 ! Module for dimensions and array sizing
 module dimensions_mod
-    implicit none
+    implicit none(type, external)
+
     integer :: NS, NSP1, NVL
 end module dimensions_mod
 
 ! Module for bay/domain geometry parameters
 module bay_geometry_mod
-    implicit none
+    implicit none(type, external)
+
     real :: DX, DTL, XBARGE, ZBARGE, DXH, DXR, AREA
 end module bay_geometry_mod
 
 ! Module for ambient conditions
 module ambient_conditions_mod
-    implicit none
+    implicit none(type, external)
+
     integer :: NROA, IY
     real :: Y(8), ROA(8), H
 end module ambient_conditions_mod
 
 ! Module for simulation control and guidance parameters
 module simulation_control_mod
-    implicit none
+    implicit none(type, external)
+
     real :: TJET, TSTOP
     integer :: ISTEP, IPLUNG, NUTRL, NTRIAL, ILEAVE, KEY1, KEY2, KEY3
 end module simulation_control_mod
 
 ! Module for additional guidance parameters
 module guidance_mod
-    implicit none
+    implicit none(type, external)
+
     integer :: NIND
     integer :: NLINE(150), MF(150), ML(150)
 end module guidance_mod
 
 ! Module for printing control
 module print_control_mod
-    implicit none
+    implicit none(type, external)
+
     logical :: PRT
 end module print_control_mod
 
 ! Module for cloud/particle tracking arrays
 module cloud_tracking_mod
-    implicit none
+    implicit none(type, external)
+
     real :: T(600), CX(600), CY(600), CZ(600), CU(600), DENDIF(600)
     real :: BC(600), AA(600), FC(600), VF
 end module cloud_tracking_mod
 
 ! Module for jet properties
 module jet_properties_mod
-    implicit none
+    implicit none(type, external)
+
     real :: DL(600), THETA2(600), S(600)
     real :: UB, UBX, WBZ, SAI, V2, DLDT, DJET, ROI, ROO, VDOT
 end module jet_properties_mod
 
 ! Module for particle/sediment properties
 module particle_properties_mod
-    implicit none
+    implicit none(type, external)
+
     real :: PARAM(13), RDAS(13), CS(13), VFALL(13), VOIDS(13), BVOID
     real :: ROAS(13)  ! Alternative name used in some places
 end module particle_properties_mod
 
 ! Module for graphics/plotting parameters
 module graphics_mod
-    implicit none
+    implicit none(type, external)
+
     integer :: IGCN, IGCL, IGLT, IPCN, IPCL, IPLT
 end module graphics_mod
 
 ! Module for tracking lost material
 module lost_material_mod
-    implicit none
+    implicit none(type, external)
+
     real :: GONE
 end module lost_material_mod
 
 ! Module for bottom position
 module bottom_position_mod
-    implicit none
+    implicit none(type, external)
+
     real :: XBO, ZBO
 end module bottom_position_mod
 
 ! Module for switches and flags
 module switches_mod
-    implicit none
+    implicit none(type, external)
+
     integer :: ITF
 end module switches_mod
 
 ! Module for discretization passes
 module discretization_mod
-    implicit none
+    implicit none(type, external)
+
     integer :: NPASS, MPASS
 end module discretization_mod
 
 ! Module for tracer and concentration tracking
 module tracer_mod
-    implicit none
+    implicit none(type, external)
+
     integer :: ITD
     real :: TD(6), DC(6), TRACER, CINIT, CBACK
 end module tracer_mod
 
 ! Module for coefficients - short term
 module short_term_coeff_mod
-    implicit none
+    implicit none(type, external)
+
     real :: ALPHA, ALPHAC, ALPHAO, ALPHA1, ALPHA2, ALPHA3, ALPHA4
     real :: BETA1, BETA2, BETA3, BETAC, BETAR, GAMMA
 end module short_term_coeff_mod
 
 ! Module for coefficients - long term
 module long_term_coeff_mod
-    implicit none
+    implicit none(type, external)
+
     real :: ALAMDA, DIF, AKYO
 end module long_term_coeff_mod
 
 ! Module for mathematical constants
 module constants_mod
-    implicit none
+    implicit none(type, external)
+
     real :: G, PI
 end module constants_mod
 
 ! Module for velocity specifications
 module velocity_specs_mod
-    implicit none
+    implicit none(type, external)
+
     integer :: IFORM
     real :: DU1, DU2, UU1, UU2, DW1, DW2, WW1, WW2, DL1, DL2
 end module velocity_specs_mod
 
 ! Module for initialization data
 module initialization_mod
-    implicit none
+    implicit none(type, external)
+
     real :: SAVE(22), CF
 end module initialization_mod
 
 ! Module for profile data
 module profile_mod
-    implicit none
+    implicit none(type, external)
+
     integer :: NPROF
     real :: DTROA
     real :: YROA(8,50), RHOA(8,50)
@@ -143,63 +164,73 @@ end module profile_mod
 
 ! Module for cloud storage counters
 module cloud_storage_mod
-    implicit none
+    implicit none(type, external)
+
     integer :: NTCLD(13)
 end module cloud_storage_mod
 
 ! Module for computational arrays
 module computational_arrays_mod
-    implicit none
+    implicit none(type, external)
+
     real :: E(22), EP(22)
 end module computational_arrays_mod
 
 ! Module for entrainment control
 module entrainment_mod
-    implicit none
+    implicit none(type, external)
+
     integer :: NOTRN
 end module entrainment_mod
 
 ! Module for collapse parameters
 module collapse_mod
-    implicit none
+    implicit none(type, external)
+
     real :: AO, FBED
     integer :: IBED
 end module collapse_mod
 
 ! Module for step size control
 module step_control_mod
-    implicit none
+    implicit none(type, external)
+
     real :: DS, DLF
 end module step_control_mod
 
 ! Module for point tracking
 module point_tracking_mod
-    implicit none
+    implicit none(type, external)
+
     integer :: MST, NST
 end module point_tracking_mod
 
 ! Module for numerical counters
 module numerical_counters_mod
-    implicit none
+    implicit none(type, external)
+
     integer :: NCT
 end module numerical_counters_mod
 
 ! Module for correlation parameters
 module correlation_mod
-    implicit none
+    implicit none(type, external)
+
     real :: CM, CMAX
 end module correlation_mod
 
 ! Module for old jet properties
 module old_jet_mod
-    implicit none
+    implicit none(type, external)
+
     real :: ODTC, OCSIDE, ODBX, ODBZ, OCTOP, OT
     real :: OCTHK(13), OTBF(13)
 end module old_jet_mod
 
 program dmfj
     use dimensions_mod
-    implicit none
+    implicit none(type, external)
+
     
     ! Local variables
     integer :: NMAX, MMAX, NSC, NVL_LOCAL
@@ -295,7 +326,8 @@ subroutine main_sub(X, Z, DEPTH, ICODE, CP, COUT, THICKP, TOPP, C, THICK, &
     use discretization_mod
     use tracer_mod
     
-    implicit none
+    implicit none(type, external)
+
     
     ! Arguments
     integer, intent(in) :: NMAX, MMAX, NSC

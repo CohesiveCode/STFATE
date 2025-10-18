@@ -4,7 +4,8 @@ module instant_discharge_math
     use stdlib_kinds, only: dp
     use stdlib_linalg, only: norm
     
-    implicit none
+    implicit none(type, external)
+
     
 contains
     

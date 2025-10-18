@@ -1,5 +1,6 @@
 module STFATE
-   implicit none
+   implicit none(type, external)
+
    private
 
    ! public :: say_hello

@@ -1,7 +1,8 @@
 module mod_linear_interp
    use stdlib_kinds, only: dp
    
-   implicit none
+   implicit none(type, external)
+
    private
    public :: linear_interp, bilinear_interp, trilinear_interp
 

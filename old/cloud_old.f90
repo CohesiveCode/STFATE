@@ -4,11 +4,22 @@ module mod_cloud
       calc_S_i, calc_hemisphere_vol, calc_alpha, calc_vorticity
    use mod_cloud_helper, only: calc_y_centroid, calc_clouds_bounds, check_cloud_in_domain 
    use mod_bounds, only: t_bounds
-   use mod_particles, only: t_particles
 
    implicit none(type, external)
+
    private
 
+   type, public :: t_particles
+      integer :: num_class               ! number of particles classes
+      
+      real(dp), allocatable :: concen(:) ! Concentration of each particle class
+      real(dp), allocatable :: vol(:)    ! Volume of each particle class
+      real(dp), allocatable :: mass(:)   ! Mass of each particle class
+
+      real(dp) :: total_mass             ! Total mass of all particles 
+      real(dp) :: total_vol              ! Total volume of all particles
+   end type t_particles
+   
    type, public :: d_cloud
 
       integer         :: id                ! id of the cloud
@@ -20,16 +31,16 @@ module mod_cloud
       real(dp)        :: horiz_radius      ! horizontal radius
 
       real(dp)        :: mass              ! Total mass of the cloud
-      real(dp)        :: mass_coeff        ! Apparent mass coefficient
+      real(dp)        :: mass_coeff       ! Apparent mass coefficient
       real(dp)        :: rho               ! Density of the cloud
       real(dp)        :: vol               ! Volume of the cloud
       real(dp)        :: vorticity         ! Vorticity of the cloud
       real(dp)        :: vel(3)            ! Velocity of the cloud (u, v, w)
       real(dp)        :: momentum(3)       ! Momementum of the cloud
 
-      real(dp)          :: init_tracer_concen ! Init tracer concentart
-      type(t_particles) :: partl              ! Particles properties of the cloud
-      type(t_bounds)    :: bounds             ! Rectangular box bound around the cloud in global coordinates
+      real(dp), allocatable :: vol_class(:) ! Volume of each class
+      type(t_particles) :: part             ! Particles properties of the cloud
+      type(t_bounds) :: bounds            ! Rectangular box bound around the cloud in global coordinates
    
    contains
       procedure, public :: set_vol
@@ -130,23 +141,18 @@ contains
    end subroutine check_bounds
 
    subroutine init_dump_cloud(self, id, rho, mass_coeff, vert_radius, horiz_radius, &
-      top_surf_pos, init_vel, init_partl_concen, init_partl_rho, init_tracer_concen, domain_bounds)
+      top_surf_pos, init_vel, domain_bounds)
       ! Initialize a cloud with given properties
 
       ! TODO: Need to go through this and update it so that the location is properly updated.
-      class(d_cloud), intent(inout) :: self                  ! Resulting cloud object
-      integer , intent(in)          :: id                    ! id of the cloud
-      real(dp), intent(in)          :: rho                   ! Density of the cloud
-      real(dp), intent(in)          :: mass_coeff            ! Apparent mass coeff
-      real(dp), intent(in)          :: vert_radius           ! Vertical radius of the cloud
-      real(dp), intent(in)          :: horiz_radius          ! Horizontal radius of the cloud
-      real(dp), intent(in)          :: top_surf_pos(3)       ! Initial position of the center of the top surface of the cloud (x, y, z)
-      real(dp), intent(in)          :: init_vel(3)           ! Initial velocity of the cloud (u, v, w)
-
-      real(dp), intent(in)          :: init_partl_concen(:)  ! initial particle concentration
-      real(dp), intent(in)          :: init_partl_rho(:)     ! Initial particle dry density
-      real(dp), intent(in)          :: init_tracer_concen    ! initial tracer concentration
-
+      class(d_cloud), intent(inout) :: self            ! Resulting cloud object
+      integer , intent(in)          :: id              ! id of the cloud
+      real(dp), intent(in)          :: rho             ! Density of the cloud
+      real(dp), intent(in)          :: mass_coeff      ! Apparent mass coeff
+      real(dp), intent(in)          :: vert_radius     ! Vertical radius of the cloud
+      real(dp), intent(in)          :: horiz_radius    ! Horizontal radius of the cloud
+      real(dp), intent(in)          :: top_surf_pos(3) ! Initial position of the center of the top surface of the cloud (x, y, z)
+      real(dp), intent(in)          :: init_vel(3)          ! Initial velocity of the cloud (u, v, w)
       class(t_bounds), intent(in)   :: domain_bounds
 
       ! Local variables
@@ -154,15 +160,14 @@ contains
 
       self%id = id
 
-      
-      self%rho = rho ! Bulk density of the 
+      self%rho = rho
       self%vert_radius = vert_radius
       self%horiz_radius = horiz_radius
 
       self%vel = init_vel
       self%mass_coeff = mass_coeff
 
-      self%vol = calc_hemisphere_vol(self%vert_radius)
+      call self%set_vol()
       call self%set_mass()
       call self%set_momentum()
       call self%set_vorticity()
@@ -177,11 +182,6 @@ contains
       ! Update positions
       self%top_surf_pos = top_surf_pos ! Set the top surf position now that we've checked that the 
       self%pos = pos
-
-      ! Init the particles in the cloud
-      call self%partl%init(init_partl_concen, init_partl_rho, self%mass, self%vol)
-
-
 
    end subroutine init_dump_cloud
 

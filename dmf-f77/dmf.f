@@ -494,7 +494,7 @@ C      LOAD FROM BARGE
       KV=1
       IBED=0
       ILEAVE=999
-      NSP1=NS+1
+      NSP1=NS+1 ! Number of solid components plus 1
 C      ....HERE TO SFT INITIAL CONDITIONS..,.
       READ(5,25) RB,OREL,CU(1),CV(1),CW(1),ROO,BVOID
       WRITE(6,125)RB,DREL,CU(1),CV(1),CW(1),ROO,BVOID
@@ -516,28 +516,30 @@ C      ....HERE TO SFT INITIAL CONDITIONS..,.
   150 CONTINUE
       PARAM(NSPt)=5HFLUID                                                NON-ANSI
       VFALL(NSP1)=0.
+
 C     CHECK CONSISTENCY OF PARAMETERS WITH NECESSARY MINIMUM FLUID DENSITY OF
-      CS(NSP1)=1.
-      CTV=2.*PI*(RB*30.48)**3/3
-      CIVS=CIV
-      CIM = ROO*CIV
+      CS(NSP1)=1. ! Concentration of particles in volume ratio
+      CIV=2.*PI*(RB*30.48)**3/3 ! Calc the total volume (not sure what the *30.48 is)
+      CIVS=CIV      ! Saved total cloud volume
+      CIM = ROO*CIV ! Initial mass
       DO 170 K=1,NS
-      SV=CS(K)*CIVS
-      SM=SV*ROAS(K)
-      CS(NSP1)=CS(NSP1) - CS(K)
-      CIV=CIV-SV
-      CIM=CIM-SM
+        SV=CS(K)*CIVS ! Solid volume in cloud
+        SM=SV*ROAS(K) ! Solid mass in cloud
+        CS(NSP1)=CS(NSP1) - CS(K) ! This number should be >=1? Pretty sure this is a check on the input particle concentrations
+        CIV=CIV-SV
+        CIM=CIM-SM
   170 CONTINUE
+
       FD=CIM/CIV
-      WRITE(6,145) PARAMCNSP1),FD,CS(NSP1),VFALL(NSP1)
-      IF(FD .GE. .97) GO TO 190
-      WRITE(6,185)
-      FORMAT(//10X,44HFLUID DENSITY LESS THAN .97 GM/CC, CALL EXIT )
+      WRITE(6,145) PARAMCNSP1),FD,CS(NSP1),VFALL(NSP1) 
+      IF(FD .GE. .97) GO TO 190 
+      WRITE(6,185) 
+  185 FORMAT(//10X,44HFLUID DENSITY LESS THAN .97 GM/CC, CALL EXIT ) 
       CALL EXIT
-      CONTINUE
-      READ INFO FOR DILUTION OF CHEMICAL TRACER
-      READ(5,192) TRACER,CINIT,CBACK
-      FORMAT(A10,2E10,0)
+  190 CONTINUE 
+C READ INFO FOR DILUTION OF CHEMICAL TRACER 
+      READ(5,192) TRACER,CINIT,CBACK 
+  192 FORMAT(A10,2E10,0)
 C      ....CONVERT UNITS FROM G.i/CC TO SLUGS/CUF . . . , ,
       DO 200 1=1,NS
   200 ROAS(I)=ROAS(I)* 1.94 
@@ -586,8 +588,8 @@ C      ....HERE TO WRITE COEFFICIENTS.,,.
       115 FORMAT(1 OX,6HALAMDA,F10.4,1X,4HAKY0,F10,4/)
 C     ....SAVE AMBIENT DENSITY AT Y(l)....
       ROAA=ROA(1)
-      C1=(ROO-ROA(1))/ROA(1)
-      E1=(ROA(NROA)-ROA(1))/(H*ROA(1))
+      C1=(ROO-ROA(1))/ROA(1)            ! Relative concentration?
+      E1=(ROA(NROA)-ROA(1))/(H*ROA(1))  !
       FF=CV(1)/SQRT(G*C1*RB)
       EE1=E1*RB/C1
 C     TOTAL NUMBER OF EQUATIONS

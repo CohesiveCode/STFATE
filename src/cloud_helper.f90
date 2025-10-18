@@ -4,7 +4,7 @@ module mod_cloud_helper
 
     !! helper procedures for cloud calcs
     private 
-    public :: calc_clouds_bounds
+    public :: calc_y_centroid, calc_clouds_bounds, check_cloud_in_domain 
 
 contains
     pure function calc_y_centroid(vert_radius) result(centroid)
@@ -14,10 +14,11 @@ contains
         centroid = (3.0_dp/8.0_dp) * vert_radius
     end function calc_y_centroid
 
-    class(t_bounds) pure function calc_clouds_bounds(pos, y_centroid, vert_radius, horiz_radius) result (cloud_bounds)
+    pure function calc_clouds_bounds(pos, y_centroid, vert_radius, horiz_radius) result (cloud_bounds)
         real(dp), intent(in)          :: pos(3)
         real(dp), intent(in)          :: y_centroid
         real(dp), intent(in)          :: vert_radius, horiz_radius
+        type(t_bounds)  :: cloud_bounds
         ! Local variables
         real(dp) :: xs(2), ys(2), zs(2) ! Coordinate bounds
 
@@ -38,7 +39,7 @@ contains
         ! Inputs:
         type(t_bounds), intent(in)  :: cloud_bounds         ! Cloud bounds
         type(t_bounds), intent(in)  :: domain_bounds        ! Domain bounds
-        integer(int32), intent(out) :: stat  ! Error code 
+        integer, intent(out) :: stat  ! Error code 
 
         ! Local variables
         real(dp), parameter :: tol = epsilon(1.0_dp)

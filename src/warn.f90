@@ -2,7 +2,8 @@ module mod_warn
     use stdlib_kinds, only: dp
     use mod_set_default, only: set_default
 
-    implicit none
+    implicit none(type, external)
+
     private
     public :: warn_bounds
 contains

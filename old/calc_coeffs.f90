@@ -9,7 +9,8 @@ module model_parameters_mod
    use stdlib_kinds, only: dp
    use stdlib_io
 
-   implicit none
+   implicit none(type, external)
+
 
    ! everything is private unless explicitly declared public
    private

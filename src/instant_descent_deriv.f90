@@ -1,10 +1,11 @@
 module mod_instant_descent_deriv
     ! Module to calculate the derivatives of the instant descent equations
     use stdlib_kinds, only: dp
-    use constants, only: g, pi
+    use mod_constants, only: g, pi
     use mod_search, only: binary_search
 
-    implicit none
+    implicit none(type, external)
+
     
 contains
     pure function calc_dM_dt(F_b, drag, E, rho_a, U_a, S_i, rho_p, U_c) result(dM_dt)

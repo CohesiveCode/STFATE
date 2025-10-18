@@ -3,21 +3,22 @@ module mod_instant_descent
    !! Use double comments after to document functions and modules for automatic
    !! documentation generation tools.
    use stdlib_kinds, only: dp
-   use constants, only: g, pi
+   use mod_constants, only: g, pi
    use stdlib_linalg, only: norm
    use mod_set_default, only: set_default
-   implicit none
+   implicit none(type, external)
+
    private
-   public :: calc_cloud_vol, calc_E, calc_S_i, calc_momentum, calc_F_b, calc_drag, &
+   public :: calc_hemisphere_vol, calc_E, calc_S_i, calc_momentum, calc_F_b, calc_drag, &
              calc_B, calc_P_i, calc_A_param, calc_vorticity, calc_alpha, calc_beta
 contains
 
-   elemental pure function calc_cloud_vol(vert_radius) result(volume)
+   elemental pure function calc_hemisphere_vol(vert_radius) result(volume)
       !! Calc the volume of a cloud given its mean radius
       real(dp), intent(in) :: vert_radius  ! Mean radius of the cloud in meters
       real(dp)             :: volume       ! Result: Volume of the cloud in cubic meters
       volume = (2.0_dp / 3.0_dp) * pi * vert_radius**3.0_dp
-   end function calc_cloud_vol
+   end function calc_hemisphere_vol
 
    pure function calc_E(vert_radius, alpha, U_c, U_a) result(E)
       !! Eqn. 3.5 - Calculate the entrainment rate based on mean radius and entrainment coefficient
@@ -64,7 +65,7 @@ contains
       real(dp), intent(in) :: vert_radius  ! Mean radius of the cloud in meters
       real(dp)             :: F_b            ! Result: Buoyancy force acting on the cloud (N)
 
-      F_b = (rho_c - rho_a) * g * calc_cloud_vol(vert_radius)
+      F_b = (rho_c - rho_a) * g * calc_hemisphere_vol(vert_radius)
    end function calc_F_b
 
    pure function calc_drag(rho_a, vert_radius, U, U_a, C_d) result(F_d)
@@ -103,7 +104,7 @@ contains
       real(dp), intent(in) :: vert_radius  ! Mean radius of the cloud in meters
       real(dp)             :: B            ! Result: Buoyancy of the cloud (kg)
 
-      B = (surf_rho_a - rho_c)  * calc_cloud_vol(vert_radius)
+      B = (surf_rho_a - rho_c)  * calc_hemisphere_vol(vert_radius)
 
    end function calc_B
 
@@ -113,7 +114,7 @@ contains
       real(dp), intent(in) :: C_si         ! Concentration of solids in the cloud (kg/m^3),
       real(dp)             :: P_i          ! Result: Volume of solids in the cloud (m^3)
 
-      P_i = calc_cloud_vol(vert_radius) * C_si
+      P_i = calc_hemisphere_vol(vert_radius) * C_si
    end function calc_P_i
 
    pure function calc_A_param(vert_radius, surf_rho_a, g, C) result(A)

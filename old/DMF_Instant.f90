@@ -3,7 +3,8 @@ program DMF_Instant
     use dump
 
 
-  implicit none
+  implicit none(type, external)
+
 
 
   ! What is going on here?

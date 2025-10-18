@@ -3,7 +3,8 @@ module mod_vec_interp
     use mod_search, only: binary_search
     use mod_scalar_interp, only: interp3d
 
-    implicit none
+    implicit none(type, external)
+
     private
     public :: interp3d_vec_field
 
