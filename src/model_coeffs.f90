@@ -13,10 +13,10 @@ module mod_model_coeffs
       real(dp) :: dincr1          ! Factor used for estimating time step in convective phase
       real(dp) :: dincr2          ! Factor used for estimating time step in dynamic collapse
       real(dp) :: alpha0          ! Entrainment coefficient for turbulent thermal
-      real(dp) :: beta            ! Settling coeff
+      real(dp) :: beta            ! Settling coeff - Default value is expected to be good for low solids concentrations
       real(dp) :: mass_coeff      ! Apparent mass coefficient
       real(dp) :: drag_sphere     ! Drag coefficient for a sphere
-      real(dp) :: gama            ! Density gradient in the cloud
+      real(dp) :: gama            ! Density gradient in the cloud - Used to simulate the effect of 
       real(dp) :: drag_oblate     ! Drag coefficient for a collapsing spheriod
       real(dp) :: fric_oblate     ! Skin friction coefficient for the quadrant of a collapsing spheriod
       real(dp) :: drag_ellip      ! Drag coefficient for an ellipsoidal wedge
@@ -25,8 +25,8 @@ module mod_model_coeffs
       real(dp) :: frictn          ! Friction coefficient between cloud and estuary bottom
       ! Mod. factor used on computing the resistance of the friction force to the collapse of a quadrant of an oblate spheriod
       real(dp) :: f1
-      real(dp) :: alambda         ! Diss. factor used in computing horiz. diffusion
-      real(dp) :: akyo            ! Max. value of vertical diffusion coeff.
+      real(dp) :: alambda         ! [ft^2/3 / s], Diss. factor used in computing horiz. diffusion
+      real(dp) :: akyo            ! [ft^2/3 / s], Max. value of vertical diffusion coeff.
       !   real(dp), private :: nu              ! Viscosity coefficient
    contains
       procedure, public, pass :: print => print_params
@@ -39,9 +39,11 @@ contains
 
    subroutine set_tetra_tech_coeffs(self)
       !! Set the coefficients for the tetra tech coefficients
+      !! See (1)-page 98 for information for why default values were choosen
       class(t_model_coeffs), intent(inout) :: self
       type(string_type) :: name
       name = "Tetra Tech"
+
       call self%set(               &
          name           = name,    &
          dincr1         = 1.0_dp,  &

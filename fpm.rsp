@@ -20,7 +20,7 @@ option test --compiler nvfortran --flag "-Mpreprocess -fast"
 option run --compiler ifx
 
 @fortbuild
-option build --flag "-fPIC" --c-flag "-fPIC" --cxx-flag "-fPIC"
+option build --flag "-fPIC -ffree-line-length-none" --c-flag "-fPIC" --cxx-flag "-fPIC"
 
 @fortrun
-option run --flag "-fPIC" --c-flag "-fPIC" --cxx-flag "-fPIC"
+option run --flag "-fPIC -ffree-line-length-none" --c-flag "-fPIC" --cxx-flag "-fPIC"

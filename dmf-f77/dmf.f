@@ -522,7 +522,7 @@ C     CHECK CONSISTENCY OF PARAMETERS WITH NECESSARY MINIMUM FLUID DENSITY OF
       CIV=2.*PI*(RB*30.48)**3/3 ! Calc the total volume (not sure what the *30.48 is)
       CIVS=CIV      ! Saved total cloud volume
       CIM = ROO*CIV ! Initial mass
-      DO 170 K=1,NS
+      DO 170 K=1,NS   ! Loop over the particle classes and calc the solid volume and
         SV=CS(K)*CIVS ! Solid volume in cloud
         SM=SV*ROAS(K) ! Solid mass in cloud
         CS(NSP1)=CS(NSP1) - CS(K) ! This number should be >=1? Pretty sure this is a check on the input particle concentrations
@@ -588,10 +588,11 @@ C      ....HERE TO WRITE COEFFICIENTS.,,.
       115 FORMAT(1 OX,6HALAMDA,F10.4,1X,4HAKY0,F10,4/)
 C     ....SAVE AMBIENT DENSITY AT Y(l)....
       ROAA=ROA(1)
-      C1=(ROO-ROA(1))/ROA(1)            ! Relative concentration?
-      E1=(ROA(NROA)-ROA(1))/(H*ROA(1))  !
-      FF=CV(1)/SQRT(G*C1*RB)
-      EE1=E1*RB/C1
+      C1=(ROO-ROA(1))/ROA(1)            ! Relative specific gravity of the cloud
+      E1=(ROA(NROA)-ROA(1))/(H*ROA(1))  ! Some type of density gradient
+      FF=CV(1)/SQRT(G*C1*RB)            ! FF = v_vel / sqrt(g * Gs_rel * vert_radius)
+      EE1=E1*RB/C1                      ! EE1 = grad(rho) * vert_radius / Gs_rel
+
 C     TOTAL NUMBER OF EQUATIONS
       NE=9+NS
 C     LONG TERM DIFFUSION PARAMETER
@@ -608,7 +609,7 @@ C      ....SELECT TIME STEP FOR ; INTEGRATIONS..
       GO TO 250
   230 IF(CV(1) .EQ. 0.) GO TO 210
 C      CRITERION FROM CONDITION OF STRATIFICATION
-      DT=0.1*PI*FF/SQRT(EE1)
+      DT=0.1*PI*FF/SQRT(EE1) ! 
 C    CRITERION FROM UNIFORM AMBIENT
       DT1=.01*RB*FF*(1.+ALPHA0*H/RB)**2/(CV(1)*2.) ! Not sure what this is
       IF(DT-DTl) 250,240,240
