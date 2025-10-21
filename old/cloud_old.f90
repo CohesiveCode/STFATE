@@ -1,8 +1,7 @@
 module mod_cloud
-   use stdlib_kinds, only: dp, int32
-   use mod_instant_descent, only: calc_B, calc_A_param, calc_drag, calc_E, calc_F_b, calc_momentum, calc_P_i,&
-      calc_S_i, calc_hemisphere_vol, calc_alpha, calc_vorticity
-   use mod_cloud_helper, only: calc_y_centroid, calc_clouds_bounds, check_cloud_in_domain 
+   use stdlib_kinds, only: dp
+   use mod_dump_descent !! TODO add in only statement
+   use mod_cloud_helper, only: calc_y_centroid_hemisphere, calc_clouds_bounds, check_cloud_in_domain 
    use mod_bounds, only: t_bounds
 
    implicit none(type, external)
@@ -20,7 +19,7 @@ module mod_cloud
       real(dp) :: total_vol              ! Total volume of all particles
    end type t_particles
    
-   type, public :: d_cloud
+   type, public :: t_dump_des_cloud
 
       integer         :: id                ! id of the cloud
 
@@ -52,13 +51,13 @@ module mod_cloud
       procedure, public :: check_bounds
       procedure, public :: init => init_dump_cloud
       procedure, public :: print => print_cloud
-   end type d_cloud
+   end type t_dump_des_cloud
 
 contains
 
    elemental pure subroutine set_vol(self, ext_vert_radius)
       !! Set the colume of the cloud given the vertical radius
-      class(d_cloud), intent(inout) :: self
+      class(t_dump_des_cloud), intent(inout) :: self
       real(dp), intent(in), optional :: ext_vert_radius
 
       !Local variables
@@ -76,7 +75,7 @@ contains
 
    elemental pure subroutine set_mass(self)
       !! Set the mass of the cloud
-      class(d_cloud), intent(inout) :: self
+      class(t_dump_des_cloud), intent(inout) :: self
 
       self%mass = self%rho * self%vol
    end subroutine set_mass
@@ -84,29 +83,29 @@ contains
    elemental pure subroutine set_momentum(self)
       !! Set the momentum of the cloud 
       
-      class(d_cloud), intent(inout) :: self
+      class(t_dump_des_cloud), intent(inout) :: self
 
-      self%momentum = calc_momentum(self%mass_coeff, self%rho, self%vert_radius, self%vel)
+      self%momentum = calc_dd_momentum(self%mass_coeff, self%rho, self%vert_radius, self%vel)
    end subroutine set_momentum
 
    elemental pure subroutine set_vorticity(self)
       !! Set the vorticity
-      class(d_cloud), intent(inout) :: self
+      class(t_dump_des_cloud), intent(inout) :: self
 
       ! self%vel(2) is the velocity in the y-direction
-      self%vorticity = calc_vorticity(self%vel(2), self%horiz_radius)
+      self%vorticity = calc_dd_vorticity(self%vel(2), self%horiz_radius)
    end subroutine set_vorticity
 
    elemental pure subroutine set_y_centroid(self)
       !! Set the y_centroid of the cloud
-      class(d_cloud), intent(inout) :: self
+      class(t_dump_des_cloud), intent(inout) :: self
 
-      self%y_centroid = calc_y_centroid(self%vert_radius)
+      self%y_centroid = calc_y_centroid_hemisphere(self%vert_radius)
    end subroutine set_y_centroid
 
    pure subroutine set_bounds(self, pos)
       !! Sets the bounds for the cloud
-      class(d_cloud), intent(inout) :: self
+      class(t_dump_des_cloud), intent(inout) :: self
       real(dp), intent(in) :: pos(3)
 
       self%bounds = calc_clouds_bounds(pos, self%y_centroid, self%vert_radius, self%horiz_radius)
@@ -114,7 +113,7 @@ contains
 
    subroutine check_bounds(self, domain_bounds)
       !! Subroutine checks that the updated position is in the domain,
-      class(d_cloud), intent(inout) :: self
+      class(t_dump_des_cloud), intent(inout) :: self
       class(t_bounds), intent(in) :: domain_bounds
 
       ! Local variables
@@ -145,7 +144,7 @@ contains
       ! Initialize a cloud with given properties
 
       ! TODO: Need to go through this and update it so that the location is properly updated.
-      class(d_cloud), intent(inout) :: self            ! Resulting cloud object
+      class(t_dump_des_cloud), intent(inout) :: self            ! Resulting cloud object
       integer , intent(in)          :: id              ! id of the cloud
       real(dp), intent(in)          :: rho             ! Density of the cloud
       real(dp), intent(in)          :: mass_coeff      ! Apparent mass coeff
@@ -186,7 +185,7 @@ contains
    end subroutine init_dump_cloud
 
    subroutine print_cloud(self)
-      class(d_cloud), intent(in) :: self
+      class(t_dump_des_cloud), intent(in) :: self
 
       print *, "id", self%id
       print *, "centroid position", self%pos

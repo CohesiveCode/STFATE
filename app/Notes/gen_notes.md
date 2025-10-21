@@ -6,7 +6,7 @@ The purpose of this document is to hold general notes about the model and how it
 
 I'm confused on how the system evolves. Well either way I'm going to need initial conditions so let's focus on that
 
-# Variable definitions from pdf
+# Dump Discharge Variables
 
 * NMAX - Maximum dimension of long-term passive diffusion array in z-direction
 * MMAX - Maximum dimension of long-term passive diffusion array in x-direction
@@ -132,10 +132,10 @@ IPLT -
 * Frictn - Friction coefficient between cloud and estuary bottom
 * F1 - Modificaiton factor used on computing the resistance of the friction force to the collapse of a quadrant of an oblate spheriod
 * alambda - Dissipation factor used in computing horizontal diffusion cofficient by four-thirds law
-* akyo - maximum value of vertical diffusion coefficient
+* akyo - maximum vaslue of vertical diffusion coefficient
 
 
-# Definitions from the textbook
+## Definitions from the textbook
 * NTRIAL - Trial solution number
 * DT - Time step in seconds
 * IPLUNG - State of the cloud
@@ -156,8 +156,8 @@ IPLT -
 
     (999) - Initial value of 999
     (i)   - Any other value stores the time step when the cloud rises off the bottom
-     
-# Variable definitions from code
+
+## Variable definitions from code
 
 * CIV - Initial volume of the cloud
 * CIVS -
@@ -171,7 +171,7 @@ IPLT -
 
 ------------------------------------------------------------------------
 
-# Indexs and lengths
+## Indexs and lengths
 
 * NROA - Number of ambient density coordinates
 
@@ -209,3 +209,121 @@ Meaning of values in E in DerivD
 - E(20) -
 - E(21) -
 - E(22) -
+
+## Code flow chart notes
+![Dump Discharge Code Flow Chart](image-1.png)
+
+* For Dump short term computations are completed before moving to long term?
+* The cloud is split into smaller clouds ?? at some point. I'm not sure what that point is
+    * Nvm this is listed at the BOOKS step. "Create small clouds for this component"
+
+
+### Questions
+* How are the location of the components that settle out tracked? Are they advected after they leave the cloud?
+* 
+
+
+### Process Notes
+
+The different stages of the computation are:
+1) Init initial geometry
+2) Set initial model coeffs
+3) Set initial conditions for physical parameters
+4) Read/Set the initial velocities across the domain
+    * Velocity conditions
+    * 
+
+5) Dump (Convective phase) a cloud of sediment into the estuary
+    * Use DERIVD and RUNGE to update the model parameters
+    * This step tries to move the cloud to a neutrally buoyant position or until it hits the bottom
+    * In the og. version DUMP is allowed to history of the descent **5** times.
+        * "A trial solutioin is succesful when the cloud has taken between 100 and 200 time steps to either reach a level of neutral buoyancy or to hit the bottom"
+        * Not sure how the number of time steps is incremented. What is used to update the time step? (Might be able to use a larger number of time steps. The limit seems pretty arbitrary. Will need to test this though)
+    * **DT** is used as as the time step here
+    * List of rectangular domain test cases
+      * Homogenous density - In zero velocity field - Flat surface and flat bottom
+      * Homogenous density - In non-zero constant velocity field - Flat Surface and flat bottom
+      * Homogenous density - In non-zero constant velocity field - Flat Surface and variable
+      * Linear density     - In zero velocity field (aim for neutral buoyancy)
+      * Linear density     - In non-zero constant velocity field (aim for neutral buoyancy)
+      * Variable density   - In non-zero constant velocity field
+      * Variable density   - In log velocity field **(Add later)**
+      * Variable density   - In user defined velocity field **(Add later)**
+    
+    * List of variable domain test cases
+      * Homogenous density - In non-zero velocity field into a wall of soil 
+        * Need to think about how to handle boundary conditions here
+        * Velocity field 
+          * Field can't be uniform here to obey the no penetration condition
+          * Might be able to use circulation in a box or some other simple-ish analytical field that contains boundaries
+        * Variable dens
+6) COLLAPSE (Section 3.2.2 - Dynamic Collapse in Water Column)
+    * Cloud turns elliptical (oblate spheriod)
+    * 
+
+
+### Workflow
+The work flow is the following:
+
+
+* Implement velocity variation across the domain
+    * In the og. version there are 3? different methods for the velocity to be set
+
+* Include water elevation changes from the tide
+
+* Implement land heights in the domain
+    * At any of the nodes there can be land. 
+    * Impacts:
+        * Velocity field
+        * Density field?
+        * Diffusion of material
+        * Advection of material
+        * Constrains on barge location
+        * Other things?  
+
+* Implement collapse procedures and required types. 
+* Need to figure out which procedures are repeated across 
+  * DUMP: Descent, Collapse, Bottom
+  * JET : Descent, Collapse, Bottom
+  * Some of the math procedures 
+* Need to work with cloud type to make check how things are going to work moving from:
+  * DESCENT: a downward facing half-sphere, to an oblate spheriod, to an upward facing half-sphere and possibly back to something else
+* Need to be able to split clouds and work with those smaller clouds 
+
+_________________
+
+# Jet discarge params
+
+* TJET - Duration of the jet discharge
+* SAI - Course of the barge (assumed constant and measured anti-clockwise from the positive x-axis)
+* UB  - Speed of the barge
+
+IPLING -
+
+    (0) Initial value
+    (1) jet encountered the bottom in subroutine JET
+    (2) Inidicates the collapsing plume encountered the bottom in subrouting COLLAPS
+    (4) Indicates the plume encountered the bottom and subsequently rose off the bottom
+
+NUTRL - 
+    (0) Initial value
+    (1) Indicates the jet path has become horizontal
+    (3) Inidcates that the diffusive spreading of the plume is greater than dynamic spreading
+
+* ISTEP - Number of times steps in the trial solution
+
+* IBED - 
+    (0) Initial value
+    (i) Any other value stores the time step when the jet-plume hit the bottom
+
+* ILEAVE -
+    (999) Initial value of 999
+    (i) Any other value stores the time step when the jet-plume rises off the bottom
+
+# Sources
+1) Development of Models for Prediction of Short-term Fate of dredged Material Discharged in the Estuarine Environment
+![alt text](image-2.png)
+
+![alt text](image-3.png)
+
+![alt text](image-4.png)

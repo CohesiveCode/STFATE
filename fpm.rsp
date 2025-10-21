@@ -5,7 +5,9 @@ option test --compiler gfortran --flag "-O3 -march=native -mtune=native"
 option test --compiler ifort --flag "/O3 /Qxhost"
 
 @ltestifort
-option test --compiler ifort --flag "-O3 -xhost"
+options test 
+options --compiler ifort
+options --flag "-O3 -xhost"
 
 @wtestifx
 option test --compiler ifx --flag "/O3 /Qxhost"
@@ -20,7 +22,11 @@ option test --compiler nvfortran --flag "-Mpreprocess -fast"
 option run --compiler ifx
 
 @fortbuild
-option build --flag "-fPIC -ffree-line-length-none" --c-flag "-fPIC" --cxx-flag "-fPIC"
+options build
+options --flag "-fPIC -ffree-line-length-none -Wconversion "
+options --c-flag "-fPIC"
+options --cxx-flag "-fPIC"
 
 @fortrun
 option run --flag "-fPIC -ffree-line-length-none" --c-flag "-fPIC" --cxx-flag "-fPIC"
+

@@ -2,7 +2,6 @@ module instant_discharge_math
     use stdlib_constants, only: pi_dp
     use stdlib_math, only: 
     use stdlib_kinds, only: dp
-    use stdlib_linalg, only: norm
     
     implicit none(type, external)
 
@@ -15,6 +14,6 @@ contains
         real(dp), intent(in)  :: W       ! Vertical velocity of the ambient fluid in m/s
         real(dp), intent(out) :: DEPTH   ! Rate of change of depth in m/s
         
-        DEPTH = E * (norm(U,2) - W) / norm(U,2)
+        DEPTH = E * (norm2(U) - W) / norm2(U)
     end subroutine derivd
 end module instant_discharge_math

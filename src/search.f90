@@ -7,9 +7,10 @@ module mod_search
 contains
 
    pure function binary_search(val, arr) result(idx)
-      ! Perform binary search to find the index of the largest element in arr less than or equal to val
+      !! Perform binary search to find the index of the largest element in arr less than or equal to val
+      !! Assumes that the array is sorted
       real(dp), intent(in) :: val
-      real(dp), intent(in) :: arr(:)  ! Must be sorted in ascending order
+      real(dp), intent(in) :: arr(:)  !! Must be sorted in ascending order
       integer :: idx
       integer :: low, high, mid
       real(dp), parameter :: tol = epsilon(1.0_dp) * 10.0_dp  ! Tolerance for floating-point comparison
@@ -21,7 +22,7 @@ contains
          error stop "Error: val is out of bounds"
       end if
 
-      ! Check if val is exactly equal to the first or last element
+      ! Check if val is approx. equal to the first or last element
       ! Check if the val is equal to the first or last element with a tolerance
       if (abs(val - arr(low)) < tol) then
          idx = low

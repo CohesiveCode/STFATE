@@ -132,11 +132,11 @@ module long_term_coeff_mod
 end module long_term_coeff_mod
 
 ! Module for mathematical constants
-module constants_mod
+module mod_constants
     implicit none(type, external)
 
     real :: G, PI
-end module constants_mod
+end module mod_constants
 
 ! Module for velocity specifications
 module velocity_specs_mod

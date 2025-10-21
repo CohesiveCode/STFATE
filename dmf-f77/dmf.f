@@ -589,14 +589,14 @@ C      ....HERE TO WRITE COEFFICIENTS.,,.
 C     ....SAVE AMBIENT DENSITY AT Y(l)....
       ROAA=ROA(1)
       C1=(ROO-ROA(1))/ROA(1)            ! Relative specific gravity of the cloud
-      E1=(ROA(NROA)-ROA(1))/(H*ROA(1))  ! Some type of density gradient
+      E1=(ROA(NROA)-ROA(1))/(H*ROA(1))  ! Some type of density gradient?
       FF=CV(1)/SQRT(G*C1*RB)            ! FF = v_vel / sqrt(g * Gs_rel * vert_radius)
       EE1=E1*RB/C1                      ! EE1 = grad(rho) * vert_radius / Gs_rel
 
 C     TOTAL NUMBER OF EQUATIONS
       NE=9+NS
 C     LONG TERM DIFFUSION PARAMETER
-      DIF=ALAMOA*DX**1.33333*DTL/DX**2
+      DIF=ALAMDA*DX**1.33333*DTL/DX**2 ! Long term diffusion parameter
       IF(DIF .GT. .2) DIF=.2
 C     ....END OF INITIAL CONDITIONS ....
 C
@@ -605,7 +605,7 @@ C      ....SELECT TIME STEP FOR ; INTEGRATIONS..
       IF(CV(1)) .NE. 0.) GO TO 220
   210 DT=5.
       GO TO 250
-  220 DT = .01*RB*FF*(1.+ALPHA0*H/RB)**2/(CV(1)*2.)
+  220 DT = .01*RB*FF*(1.+ALPHA0*H/RB)**2/(CV(1)*2.) ! dt - time step calc?
       GO TO 250
   230 IF(CV(1) .EQ. 0.) GO TO 210
 C      CRITERION FROM CONDITION OF STRATIFICATION
@@ -1188,7 +1188,7 @@ C     ...START OF COMPUTATIONAL LOOP...
       GO TO 150
   140 BETAA=BETA
   150 SS(ISTEP,K)=E(K+10)/VOLUME
-      FBED=FBED-PI*E(9)**2*ABS(VFALL(K))*ROAS(K)*SS(ISTEP,K)
+      FBED=FBED - PI * E(9)**2 * ABS(VFALL(K)) *ROAS(K) * SS(ISTEP,K)
      ,      *(1.-BETAA)*CV(ISTEP)
   160 CONTINUE
       IF(ISTEP .EQ. IBED) GO TO 110
@@ -1199,8 +1199,8 @@ C     ...START OF COMPUTATIONAL LOOP...
       TD(ITD)=T(ISTEP)
       ITD=ITD+1
   460 CONTINUE
-      FBED=FBED+.66666*PI*AA(ISTEP)*E(9)      **2*(ROD-ROAA)*G
-     1     -CM*(E(4)*CV(ISTEP)-E(6)*CV(ISTEP-1))/DT
+      FBED = FBED + .66666 * PI * AA(ISTEP) * E(9)**2 * (ROD-ROAA)*G
+     1     - CM * ( E(4) * CV(ISTEP) - E(6) * CV (ISTEP-1) ) / DT
 C     AKX - CHANGE OF B BY DIFFUSION
       AKX=2.*ALAMDA*(  E(9))**.33333
       IF(E(2) .GE. H) AKX=1.0E50

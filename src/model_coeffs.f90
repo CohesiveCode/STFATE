@@ -1,4 +1,7 @@
 module mod_model_coeffs
+   ! TODO: I'm planning to convert the code to a consistent set of units. 
+   ! I want to use metric because it would make things easier and the interopability with other programs
+   ! I'm going
    use stdlib_kinds, only: dp
    use mod_set_default, only: set_default
    use stdlib_strings, only: join
@@ -8,25 +11,31 @@ module mod_model_coeffs
    implicit none(type, external)
    private
 
+
    type, public :: t_model_coeffs
-      type(string_type) :: name   ! Name of the model coefficients
-      real(dp) :: dincr1          ! Factor used for estimating time step in convective phase
-      real(dp) :: dincr2          ! Factor used for estimating time step in dynamic collapse
-      real(dp) :: alpha0          ! Entrainment coefficient for turbulent thermal
-      real(dp) :: beta            ! Settling coeff - Default value is expected to be good for low solids concentrations
-      real(dp) :: mass_coeff      ! Apparent mass coefficient
-      real(dp) :: drag_sphere     ! Drag coefficient for a sphere
-      real(dp) :: gama            ! Density gradient in the cloud - Used to simulate the effect of 
-      real(dp) :: drag_oblate     ! Drag coefficient for a collapsing spheriod
-      real(dp) :: fric_oblate     ! Skin friction coefficient for the quadrant of a collapsing spheriod
-      real(dp) :: drag_ellip      ! Drag coefficient for an ellipsoidal wedge
-      real(dp) :: drag_plate      ! Drag coefficient for a plate
-      real(dp) :: alphac          ! Entrainment coefficient for collapse
-      real(dp) :: frictn          ! Friction coefficient between cloud and estuary bottom
-      ! Mod. factor used on computing the resistance of the friction force to the collapse of a quadrant of an oblate spheriod
-      real(dp) :: f1
-      real(dp) :: alambda         ! [ft^2/3 / s], Diss. factor used in computing horiz. diffusion
-      real(dp) :: akyo            ! [ft^2/3 / s], Max. value of vertical diffusion coeff.
+      !! Type holds the general model coefficients. Might need to split this in the future.
+      !! TODO: Rename the components so they have more decriptive names. Include comment for what there original name was for cross referencing.
+      type(string_type) :: name   !! Name of the model coefficients
+      real(dp) :: dincr1          !! Factor used for estimating time step in convective phase
+      real(dp) :: dincr2          !! Factor used for estimating time step in dynamic collapse
+      real(dp) :: alpha0          !! Entrainment coefficient for turbulent thermal
+      real(dp) :: beta            !! Settling coeff - Default value is expected to be good for low solids concentrations
+      real(dp) :: mass_coeff      !! Apparent mass coefficient
+      real(dp) :: drag_sphere     !! Drag coefficient for a sphere - og. CD
+      real(dp) :: gama            !! Density gradient in the cloud - ? 
+                                  !! Coeff introduced by koh and chang to simulate the effect of density gradient differences in causing cloud collapse
+                                  !! Default value based on an educated guess
+      real(dp) :: drag_oblate     !! Drag coefficient for a collapsing spheriod
+      real(dp) :: fric_oblate     !! Skin friction coefficient for the quadrant of a collapsing spheriod - og.
+      real(dp) :: drag_ellip      !! Drag coefficient for an ellipsoidal wedge - og. CD3
+      real(dp) :: drag_plate      !! Drag coefficient for a plate
+      real(dp) :: alphac          !! Entrainment coefficient for collapse
+      real(dp) :: frictn          !! Friction coefficient between cloud and estuary bottom
+                                  !! Mod. factor used on computing the resistance of the friction force to the collapse of a quadrant of an oblate spheriod
+      real(dp) :: f1              !! TODO: ??, related to bottom collapse friction need to check back
+      real(dp) :: alambda         !! [ft^2/3 / s], Dissipation factor used in computing horiz. diffusion
+      real(dp) :: akyo            !! [ft^2/3 / s], Max value of vertical diffusion coeff.
+      real(dp) :: vorticity_diss  !! Vorticity dissipation coefficient for dump descent phase - Default value specified in second paragraph of Ref(1) - pg. 33 og. "C"
       !   real(dp), private :: nu              ! Viscosity coefficient
    contains
       procedure, public, pass :: print => print_params
@@ -35,7 +44,6 @@ module mod_model_coeffs
    end type
 
 contains
-
 
    subroutine set_tetra_tech_coeffs(self)
       !! Set the coefficients for the tetra tech coefficients
@@ -61,7 +69,8 @@ contains
          frictn         = 1e-2_dp, &
          f1             = 0.1_dp,  &
          alambda        = 5e-3_dp, &
-         akyo           = 0.05_dp  &
+         akyo           = 0.05_dp, &
+         vorticity_diss = 3.0_dp   &  
          )
 
    end subroutine set_tetra_tech_coeffs
@@ -73,7 +82,7 @@ contains
       ! Local variables
       type(string_type) :: header, footer
 
-      character(len=*), parameter :: FMT = '(A16, " : ", T19, F12.5)'
+      character(len=*), parameter :: FMT = '(A30, " : ", T31, F12.5)'
 
       header = "--- Model Coefficients: "//trim(self%name) // " ---"
 
@@ -84,22 +93,23 @@ contains
       print *, header
 
       ! 3. Print all parameters using the new, consistent format
-      print FMT, "dincr1",            self%dincr1
-      print FMT, "dincr2",            self%dincr2
-      print FMT, "alpha0",            self%alpha0
-      print FMT, "beta",              self%beta
-      print FMT, "Mass Coeff.",       self%mass_coeff
-      print FMT, "Drag Coeff-Sphere", self%drag_sphere
-      print FMT, "Density Grad.",     self%gama
-      print FMT, "Drag Coeff-Oblate", self%drag_oblate
-      print FMT, "Fric Oblate",       self%fric_oblate
-      print FMT, "Drag Coeff-Ellip",  self%drag_ellip
-      print FMT, "Drag Coeff-Plate",  self%drag_plate
-      print FMT, "alphac",            self%alphac
-      print FMT, "frictn",            self%frictn
-      print FMT, "f1",                self%f1
-      print FMT, "alambda",           self%alambda
-      print FMT, "akyo",              self%akyo
+      print FMT, "dincr1", self%dincr1
+      print FMT, "dincr2",                self%dincr2
+      print FMT, "alpha0",                self%alpha0
+      print FMT, "beta",                  self%beta
+      print FMT, "Mass Coeff.",           self%mass_coeff
+      print FMT, "Drag Coeff-Sphere",     self%drag_sphere
+      print FMT, "Density Grad.",         self%gama
+      print FMT, "Drag Coeff-Oblate",     self%drag_oblate
+      print FMT, "Fric Oblate",           self%fric_oblate
+      print FMT, "Drag Coeff-Ellip",      self%drag_ellip
+      print FMT, "Drag Coeff-Plate",      self%drag_plate
+      print FMT, "alphac",                self%alphac
+      print FMT, "frictn",                self%frictn
+      print FMT, "f1",                    self%f1
+      print FMT, "alambda",               self%alambda
+      print FMT, "akyo",                  self%akyo
+      print FMT, "Vorticity Dissipation", self%vorticity_diss
 
       print *, footer
       print *, ""
@@ -124,7 +134,8 @@ contains
       frictn  , &
       f1  , &
       alambda  , &
-      akyo &
+      akyo, &
+      vorticity_diss &
       )
       
       class(t_model_coeffs), intent(inout) :: self
@@ -145,24 +156,26 @@ contains
       real(dp), intent(in):: f1           !
       real(dp), intent(in):: alambda      !
       real(dp), intent(in):: akyo         !
+      real(dp), intent(in):: vorticity_diss
 
-      self%name         = name
-      self%dincr1       = dincr1
-      self%dincr2       = dincr2
-      self%alpha0       = alpha0
-      self%beta         = beta
-      self%mass_coeff   = mass_coeff
-      self%drag_sphere  = drag_sphere
-      self%gama         = gama
-      self%drag_oblate  = drag_oblate
-      self%fric_oblate  = fric_oblate
-      self%drag_ellip   = drag_ellip
-      self%drag_plate   = drag_plate
-      self%alphac       = alphac
-      self%frictn       = frictn
-      self%f1           = f1
-      self%alambda      = alambda
-      self%akyo         = akyo
+      self%name           = name
+      self%dincr1         = dincr1
+      self%dincr2         = dincr2
+      self%alpha0         = alpha0
+      self%beta           = beta
+      self%mass_coeff     = mass_coeff
+      self%drag_sphere    = drag_sphere
+      self%gama           = gama
+      self%drag_oblate    = drag_oblate
+      self%fric_oblate    = fric_oblate
+      self%drag_ellip     = drag_ellip
+      self%drag_plate     = drag_plate
+      self%alphac         = alphac
+      self%frictn         = frictn
+      self%f1             = f1
+      self%alambda        = alambda
+      self%akyo           = akyo
+      self%vorticity_diss = vorticity_diss
 
    end subroutine set_coeffs
 
