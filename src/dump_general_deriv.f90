@@ -15,7 +15,7 @@ contains
       real(dp), intent(in) :: rho(:)       ! Density values
       real(dp) :: drho_dy                  ! Density derivative
 
-      integer :: j, n
+      integer :: i, n
       ! Check that rho_a and y have the same size
       if (size(rho) /= size(y)) then
          error stop "Error: rho and y must have the same size"
@@ -24,11 +24,11 @@ contains
       n = size(y)
 
       ! Find the interval [y(i), y(i+1)] that contains yi
-      j = binary_search(yi, y(1:n))
+      i = binary_search(yi, y(1:n))
 
-      if (j == n) j = n - 1  ! Handle edge case where yi is exactly y(n)
+      if (i == n) i = n - 1  ! Handle edge case where yi is exactly y(n)
 
-      drho_dy = (rho(n+1) - rho(n)) / (y(n+1) - y(n))
+      drho_dy = (rho(i+1) - rho(i)) / (y(i+1) - y(i))
    end function calc_dump_drho_dy
 
    elemental pure function calc_dump_dP_dt(S_i) result(dP_dt)
