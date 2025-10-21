@@ -12,7 +12,7 @@ module mod_dump_descent
 
    private
    public :: calc_dump_des_E, calc_dump_des_F_drag, calc_dump_des_A, calc_dump_des_vorticity, &
-      dump_dump_des_alpha, calc_dump_des_beta, calc_dump_des_epsilon
+      calc_dump_des_alpha, calc_dump_des_beta, calc_dump_des_epsilon
 
 contains
 
@@ -71,7 +71,7 @@ contains
       vorticity = v_vel * b
    end function calc_dump_des_vorticity
 
-   elemental pure function dump_dump_des_alpha(B, K, alpha_0, C_1) result(alpha)
+   elemental pure function calc_dump_des_alpha(B, K, alpha_0, C_1) result(alpha)
       !! Ref. (1) - Eqn. 3.18 - Calculate the entrainment coefficient.
       !! This is a superset of Ref. (1) - Eqn. 3.17
       real(dp), intent(in) :: B       !! Buoyancy of the cloud, []
@@ -86,7 +86,7 @@ contains
       tanh_arg = B / (2.0_dp * pi * g * C_1 * K**2 * alpha_0)
       ! Squaring then square is equivalent to taking the absolute value. Left this way to match paper.
       alpha = alpha_0 * sqrt( tanh(tanh_arg)**2 )
-   end function dump_dump_des_alpha
+   end function calc_dump_des_alpha
 
    elemental pure function calc_dump_des_beta(v, v_fi, beta_0) result(beta)
       !! Ref. (1) - Eqn. 3.20 -  Calculate the empirical constant beta (setttling coefficient) - bottom of page 1-34
