@@ -20,7 +20,7 @@ module mod_particles
    contains
       procedure, public, pass :: init => init_particles
       procedure, public, pass :: total_vol => calc_total_vol
-      procedure, public, pass :: total_mass => calc_total_vol
+      procedure, public, pass :: total_mass => calc_total_mass
       procedure, public, pass :: print => print_particle
    end type t_particles
 
