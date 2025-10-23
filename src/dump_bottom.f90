@@ -25,7 +25,8 @@ contains
 
       R = sqrt(horiz_radius**2 - vert_radius**2)
 
-      paren_1 = pi * horiz_radius**2 + 0.5_dp * pi * vert_radius**2 * horiz_radius / R * log( (horiz_radius + R) / (horiz_radius - R))
+      paren_1 = pi  * horiz_radius**2 + 0.5_dp * pi * vert_radius**2 * horiz_radius * &
+      log( (horiz_radius + R) / (horiz_radius - R)) / R 
 
       E = paren_1 * alpha_c * db_dt
    end function calc_dump_bot_E

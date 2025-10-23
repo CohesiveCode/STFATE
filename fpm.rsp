@@ -27,6 +27,12 @@ options --flag "-fPIC -ffree-line-length-none "
 options --c-flag "-fPIC"
 options --cxx-flag "-fPIC"
 
+@gl_build
+options build
+options --flag " -fPIC -ffree-line-length-none"
+options --c-flag "-fPIC"
+options --cxx-flag "-fPIC"
+
 @fortrun
 option run --flag "-fPIC -ffree-line-length-none" --c-flag "-fPIC" --cxx-flag "-fPIC"
 

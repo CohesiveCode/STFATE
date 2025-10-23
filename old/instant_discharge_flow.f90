@@ -1,6 +1,5 @@
 module instant_discharge_math
     use stdlib_constants, only: pi_dp
-    use stdlib_math, only: 
     use stdlib_kinds, only: dp
     
     implicit none(type, external)

@@ -61,62 +61,23 @@ copyright = "Copyright 2020 Jonathan Moore"
   # A statement clarifying the Copyright status of the project.
 
 description = "Implementation of the STFATE model for simulating dredge material transport and fate in aquatic environments."
- 
-[install] # Options for the "install" subcommand
-
-library = false
-
-[build] # General Build Options
-
-[library]
-source-dir="src"
-
-type = "shared"
-
+ [build]
+auto-executables = true
+auto-tests = true
+auto-examples = true
+module-naming = false
+# external-modules = ["stdlib"]
 
 [dependencies]
 
 # stdlib = { git="https://github.com/fortran-lang/stdlib", branch="stdlib-fpm" }
-stdlib = "*"
+stdlib = {path = "../stdlib"}
 # fortplot = { git = "https://github.com/krystophny/fortplot" }
 
-[dev-dependencies]
-
-[[executable]]
-name="STFATE"
-source-dir="app"
-main="main.f90"
-
-[[test]]
-
-name="runTests"
-source-dir="test"
-main="check.f90"
-
-[[example]]
-
-name="demo"
-source-dir="example"
-main="demo.f90"
-
-[extra.ford]
-project = "My Project"
-
-# TOML allows comments, which is handy
-summary = """
-Splitting your summary over multiple lines
-is much easier in TOML.
-
-It also allows blank lines in multi-line strings.
-"""
-
-preprocess = true
-display = ["public", "protected"]
-max_frontpage_items = 4
-# An array of inline tables:
-extra_filetypes = [
-  { extension = "cpp", comment = "//" },
-  { extension = "sh", comment = "#", lexer = "bash" },
-  { extension = "py", comment = "#", lexer = "python" },
-]
-
+[install]
+library = false
+test = false
+[fortran]
+implicit-typing = false
+implicit-external = false
+source-form = "free"
