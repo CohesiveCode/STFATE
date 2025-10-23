@@ -20,7 +20,7 @@ module mod_model_coeffs
       real(dp) :: dincr2          !! Factor used for estimating time step in dynamic collapse
       real(dp) :: alpha0          !! Entrainment coefficient for turbulent thermal
       real(dp) :: beta            !! Settling coeff - Default value is expected to be good for low solids concentrations
-      real(dp) :: mass_coeff      !! Apparent mass coefficient
+      real(dp) :: apparent_mass      !! Apparent mass coefficient
       real(dp) :: drag_sphere     !! Drag coefficient for a sphere - og. CD
       real(dp) :: gama            !! Density gradient in the cloud - ? 
                                   !! Coeff introduced by koh and chang to simulate the effect of density gradient differences in causing cloud collapse
@@ -82,7 +82,7 @@ contains
       ! Local variables
       type(string_type) :: header, footer
 
-      character(len=*), parameter :: FMT = '(A30, " : ", T31, F12.5)'
+      character(len=*), parameter :: FMT = '(A24, " : ", T25, F12.5)'
 
       header = "--- Model Coefficients: "//trim(self%name) // " ---"
 
@@ -97,7 +97,7 @@ contains
       print FMT, "dincr2",                self%dincr2
       print FMT, "alpha0",                self%alpha0
       print FMT, "beta",                  self%beta
-      print FMT, "Mass Coeff.",           self%mass_coeff
+      print FMT, "Apparent Mass Coeff.",           self%apparent_mass
       print FMT, "Drag Coeff-Sphere",     self%drag_sphere
       print FMT, "Density Grad.",         self%gama
       print FMT, "Drag Coeff-Oblate",     self%drag_oblate
@@ -163,7 +163,7 @@ contains
       self%dincr2         = dincr2
       self%alpha0         = alpha0
       self%beta           = beta
-      self%mass_coeff     = mass_coeff
+      self%apparent_mass     = mass_coeff
       self%drag_sphere    = drag_sphere
       self%gama           = gama
       self%drag_oblate    = drag_oblate

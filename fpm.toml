@@ -57,7 +57,7 @@ maintainer = "jonathanm@vt.edu"
 author = "WaveHello"
   # Information on the project author.
 
-copyright = "Copyright 2020 Jane Doe"
+copyright = "Copyright 2020 Jonathan Moore"
   # A statement clarifying the Copyright status of the project.
 
 description = "Implementation of the STFATE model for simulating dredge material transport and fate in aquatic environments."
@@ -76,13 +76,12 @@ type = "shared"
 
 [dependencies]
 
-stdlib = { git="https://github.com/fortran-lang/stdlib", branch="stdlib-fpm" }
-# stdlib = "*"
+# stdlib = { git="https://github.com/fortran-lang/stdlib", branch="stdlib-fpm" }
+stdlib = "*"
 # fortplot = { git = "https://github.com/krystophny/fortplot" }
 
 [dev-dependencies]
 
-  
 [[executable]]
 name="STFATE"
 source-dir="app"
