@@ -38,6 +38,7 @@ module mod_cloud
       real(dp)          :: init_tracer_concen !! Init tracer concentart
       type(t_particles) :: partl              !! Particles properties of the cloud
       type(t_bounds)    :: bounds             !! Rectangular box bound around the cloud in global coordinates
+      
       integer           :: phase              !! Phase that the cloud is in: Descent, Water Collapse, Bottom Collapse
 
    contains

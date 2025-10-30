@@ -1,67 +1,12 @@
-  # This is your fpm(Fortran Package Manager) manifest file
-  # ("fpm.toml"). It is heavily annotated to help guide you though
-  # customizing a package build, although the defaults are sufficient
-  # for many basic packages.
-  #
-  # The manifest file is not only used to provide metadata identifying
-  # your project (so it can be used by others as a dependency). It can
-  # specify where your library and program sources live, what the name
-  # of the executable(s) will be, what files to build, dependencies on
-  # other fpm packages, and what external libraries are required.
-  #
-  # The manifest format must conform to the TOML configuration file
-  # standard.
-  #
-  # TOML files support flexible use of white-space and commenting of the
-  # configuration data, but for clarity in this sample active directives
-  # begin in column one. Inactive example directives are commented
-  # out with a pound character ("#") but begin in column one as well.
-  # Commentary begins with a pound character in column three.
-  #
-  # This file draws heavily upon the following references:
-  #
-  # The fpm home page at
-  #     https://github.com/fortran-lang/fpm
-  # A complete list of keys and their attributes at
-  #     https://github.com/fortran-lang/fpm/blob/main/manifest-reference.md
-  # examples of fpm project packaging at
-  #     https://github.com/fortran-lang/fpm/blob/main/PACKAGING.md
-  # The Fortran TOML file interface and it's references at
-  #     https://github.com/toml-f/toml-f
-  #
-  #-----------------------
-  # project Identification
-  #-----------------------
-  # We begin with project metadata at the manifest root. This data is designed
-  # to aid others when searching for the project in a repository and to
-  # identify how and when to contact the package supporters.
 
 name = "STFATE"
-  # The project name (required) is how the project will be referred to.
-  # The name is used by other packages using it as a dependency. It also
-  # is used as the default name of any library built and the optional
-  # default executable built from app/main.f90. It must conform to the rules
-  # for a Fortran variable name.
-
 version = "0.1.0"
-  # The project version number is a string. A recommended scheme for
-  # specifying versions is the Semantic Versioning scheme.
-
 license = "MIT"
-  # Licensing information specified using SPDX identifiers is preferred
-  # (eg. "Apache-2.0 OR MIT" or "LGPL-3.0-or-later").
-
 maintainer = "jonathanm@vt.edu"
-  # Information on the project maintainer and means to reach out to them.
-
 author = "WaveHello"
-  # Information on the project author.
-
 copyright = "Copyright 2020 Jonathan Moore"
-  # A statement clarifying the Copyright status of the project.
-
 description = "Implementation of the STFATE model for simulating dredge material transport and fate in aquatic environments."
- [build]
+[build]
 auto-executables = true
 auto-tests = true
 auto-examples = true
@@ -70,9 +15,12 @@ module-naming = false
 
 [dependencies]
 
-# stdlib = { git="https://github.com/fortran-lang/stdlib", branch="stdlib-fpm" }
+# stdlib = { git = "https://github.com/fortran-lang/stdlib", branch = "stdlib-fpm" }
 stdlib = {path = "../stdlib"}
 # fortplot = { git = "https://github.com/krystophny/fortplot" }
+
+[dev-dependencies]
+# fortplot = { git = "https://github.com/krystophny/fortplot/" }
 
 [install]
 library = false
