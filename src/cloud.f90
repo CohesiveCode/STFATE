@@ -20,24 +20,24 @@ module mod_cloud
 
    type, public :: t_dump_des_cloud
       !! Cloud to represent clouds
-      integer         :: id                !! id of the cloud
-      real(dp)        :: top_surf_pos(3)   !! Global posiiton of the top surface of the cloud
-      real(dp)        :: pos(3)            !! Centroid position of the cloud (x, y, z)
-      real(dp)        :: y_centroid        !! y-distance from the top_surf_pos to the y-centroid of the cloud
-      real(dp)        :: vert_radius       !! Vertical radius
-      real(dp)        :: horiz_radius      !! horizontal radius
+      integer         :: id = -99                !! id of the cloud
+      real(dp)        :: top_surf_pos(3) = -99   !! Global posiiton of the top surface of the cloud
+      real(dp)        :: pos(3) = -99            !! Centroid position of the cloud (x, y, z)
+      real(dp)        :: y_centroid = -99        !! y-distance from the top_surf_pos to the y-centroid of the cloud
+      real(dp)        :: vert_radius = -99       !! Vertical radius
+      real(dp)        :: horiz_radius = -99      !! horizontal radius
 
-      real(dp)        :: mass              !! Total mass of the cloud
-      real(dp)        :: mass_coeff        !! Apparent mass coefficient
-      real(dp)        :: rho               !! Density of the cloud
-      real(dp)        :: vol               !! Volume of the cloud
-      real(dp)        :: vorticity         !! Vorticity of the cloud
-      real(dp)        :: vel(3)            !! Velocity of the cloud (u, v, w)
-      real(dp)        :: momentum(3)       !! Momementum of the cloud
+      real(dp)        :: mass = -99              !! Total mass of the cloud
+      real(dp)        :: mass_coeff = -99        !! Apparent mass coefficient
+      real(dp)        :: rho = -99               !! Density of the cloud
+      real(dp)        :: vol = -99               !! Volume of the cloud
+      real(dp)        :: vorticity = -99         !! Vorticity of the cloud
+      real(dp)        :: vel(3) = -99            !! Velocity of the cloud (u, v, w)
+      real(dp)        :: momentum(3) = -99      !! Momementum of the cloud
 
-      real(dp)          :: init_tracer_concen !! Init tracer concentart
-      type(t_particles) :: partl              !! Particles properties of the cloud
-      type(t_bounds)    :: bounds             !! Rectangular box bound around the cloud in global coordinates
+      real(dp)          :: init_tracer_concen = -99 !! Init tracer concentart
+      type(t_particles) :: partl                    !! Particles properties of the cloud
+      type(t_bounds)    :: bounds                   !! Rectangular box bound around the cloud in global coordinates
       
       integer           :: phase              !! Phase that the cloud is in: Descent, Water Collapse, Bottom Collapse
 
@@ -61,14 +61,11 @@ contains
 
       select case (self%phase)
 
-       case(descentPhase)
+       case(descentPhase, bottomCollapsePhase)
          self%vol = calc_half_ellipsoid_vol(self%vert_radius, self%horiz_radius)
 
        case(waterCollapsePhase)
          self%vol = calc_oblate_spheriod_vol(self%vert_radius, self%horiz_radius)
-
-       case(bottomCollapsePhase)
-         self%vol = calc_half_ellipsoid_vol(self%vert_radius, self%horiz_radius)
 
        case default
          error stop "The elected phase isn't allowed. Selected is: "! self%phase
@@ -112,15 +109,12 @@ contains
 
       select case(self%phase)
 
-       case(descentPhase)
+       case(descentPhase, bottomCollapsePhase)
          self%y_centroid = calc_y_centroid_hemisphere(self%vert_radius)
 
        case(waterCollapsePhase)
          self%y_centroid = calc_y_centroid_spheriod(self%vert_radius)
-
-       case(bottomCollapsePhase)
-         self%y_centroid = calc_y_centroid_hemisphere(self%vert_radius)
-
+         
        case default
          error stop "Phase is incorrect"
 

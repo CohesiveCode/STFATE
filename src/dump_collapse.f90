@@ -153,7 +153,8 @@ contains
       real(dp), intent(in) :: dtheta
       real(dp) :: I
 
-      error stop "Function isn't implemented yet. Not sure how to integrate this."
+      print *, "Function isn't implemented yet. Not sure how to integrate this."
+      print *, "calc_dump_col_I_deriv_version"
    end function calc_dump_col_I_deriv_version
 
    pure function calc_dump_col_I(F_radial, D_D, F_f) result(I)

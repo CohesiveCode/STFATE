@@ -16,11 +16,12 @@ module-naming = false
 [dependencies]
 
 # stdlib = { git = "https://github.com/fortran-lang/stdlib", branch = "stdlib-fpm" }
-stdlib = {path = "../stdlib"}
+stdlib = {path = "../../stdlib"}
 # fortplot = { git = "https://github.com/krystophny/fortplot" }
 
 [dev-dependencies]
 # fortplot = { git = "https://github.com/krystophny/fortplot/" }
+test-drive = {git = "https://github.com/fortran-lang/test-drive.git"}
 
 [install]
 library = false
